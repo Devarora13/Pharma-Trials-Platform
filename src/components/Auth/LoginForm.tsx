@@ -23,22 +23,20 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { FlaskConical } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
   password: z.string().min(6, {
     message: "Password must be at least 6 characters",
   }),
-  role: z.enum(["pharma", "hospital", "regulator"], {
-    required_error: "Please select a role",
-  }),
 });
 
 type LoginFormProps = {
-  onLogin: (email: string, password: string, role: "pharma" | "hospital" | "regulator") => void;
+  onToggleMode: () => void;
 };
 
-const LoginForm = ({ onLogin }: LoginFormProps) => {
+const LoginForm = ({ onToggleMode }: LoginFormProps) => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -53,15 +51,18 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     
-    // In a real implementation, this would connect to Supabase Auth
-    // For demo purposes, we simulate a login with a timeout
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      onLogin(values.email, values.password, values.role);
-    } catch (error) {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: values.email,
+        password: values.password,
+      });
+
+      if (error) throw error;
+      
+    } catch (error: any) {
       toast({
         title: "Login failed",
-        description: "Please check your credentials and try again",
+        description: error.message || "Please check your credentials and try again",
         variant: "destructive",
       });
     } finally {
@@ -122,36 +123,6 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
             )}
           />
           
-          <FormField
-            control={form.control}
-            name="role"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Role</FormLabel>
-                <Select 
-                  onValueChange={field.onChange} 
-                  defaultValue={field.value}
-                  disabled={isLoading}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select your role" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="pharma">Pharmaceutical Admin</SelectItem>
-                    <SelectItem value="hospital">Hospital Staff</SelectItem>
-                    <SelectItem value="regulator">Government Regulator</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormDescription>
-                  This determines what features you can access
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? "Signing in..." : "Sign in"}
           </Button>
@@ -160,7 +131,10 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
       
       <div className="mt-6 text-center text-sm">
         <p className="text-muted-foreground">
-          Don't have an account? Contact your administrator.
+          Don't have an account?{" "}
+          <Button variant="link" className="p-0" onClick={onToggleMode}>
+            Sign up
+          </Button>
         </p>
       </div>
     </div>
