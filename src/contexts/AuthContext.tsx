@@ -82,9 +82,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setProfile({
           id: data.id,
           email: data.email,
-          fullName: data.full_name,
+          fullName: data.full_name || '',
           role: data.role,
-          organization: data.organization,
+          organization: data.organization || '',
         });
       }
     } catch (error: any) {

@@ -30,9 +30,6 @@ const formSchema = z.object({
   password: z.string().min(6, {
     message: "Password must be at least 6 characters",
   }),
-  fullName: z.string().min(2, { 
-    message: "Full name must be at least 2 characters" 
-  }),
   organization: z.string().min(2, { 
     message: "Organization name must be at least 2 characters" 
   }),
@@ -54,7 +51,6 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
     defaultValues: {
       email: "",
       password: "",
-      fullName: "",
       organization: "",
     },
   });
@@ -69,7 +65,6 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
         password: values.password,
         options: {
           data: {
-            full_name: values.fullName,
             organization: values.organization,
             role: values.role
           }
@@ -141,24 +136,6 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
                     {...field} 
                     disabled={isLoading}
                     autoComplete="new-password"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="fullName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Full Name</FormLabel>
-                <FormControl>
-                  <Input 
-                    placeholder="Dr. John Smith"
-                    {...field}
-                    disabled={isLoading}
                   />
                 </FormControl>
                 <FormMessage />
