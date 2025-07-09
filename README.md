@@ -1,4 +1,4 @@
-# Welcome to your Lovable project
+# A platform to track & manage Pharma Clinical Trials to avoid corruption in this field.
 
 ## Project info
 
